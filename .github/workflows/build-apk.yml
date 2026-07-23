@@ -1,0 +1,38 @@
+name: Build APK
+
+on:
+  repository_dispatch:
+    types: [build_apk]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Configure app (isi nama, package, konten)
+        run: python3 configure.py
+        env:
+          APP_NAME: ${{ github.event.client_payload.app_name }}
+          PACKAGE_NAME: ${{ github.event.client_payload.package_name }}
+          MODE: ${{ github.event.client_payload.mode }}
+          CONTENT: ${{ github.event.client_payload.content }}
+
+      - name: Build debug APK
+        run: gradle assembleDebug --no-daemon
+
+      - name: Upload APK sebagai artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-result
+          path: app/build/outputs/apk/debug/*.apk
