@@ -20,7 +20,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Configure app (isi nama, package, konten)
+      - name: Configure app (isi nama, package, versi, izin, konten)
         run: python3 configure.py
         env:
           APP_NAME: ${{ github.event.client_payload.app_name }}
@@ -28,6 +28,9 @@ jobs:
           MODE: ${{ github.event.client_payload.mode }}
           CONTENT: ${{ github.event.client_payload.content }}
           ICON_B64: ${{ github.event.client_payload.icon_b64 }}
+          VERSION: ${{ github.event.client_payload.version }}
+          VERSION_CODE: ${{ github.run_number }}
+          PERMISSIONS: ${{ toJSON(github.event.client_payload.permissions) }}
 
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon
