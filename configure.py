@@ -6,6 +6,7 @@ app_name = os.environ.get("APP_NAME", "MyApp")
 package_name = os.environ.get("PACKAGE_NAME", "com.abidstudio.myapp")
 mode = os.environ.get("MODE", "url")  # "url" atau "html"
 content = os.environ.get("CONTENT", "")
+icon_b64 = os.environ.get("ICON_B64", "")
 
 # 1. Set applicationId
 build_gradle_path = "app/build.gradle"
@@ -33,4 +34,22 @@ else:
 with open(strings_path, "w", encoding="utf-8") as f:
     f.write(s)
 
-print(f"Configured: app_name={app_name} package={package_name} mode={mode}")
+# 3. Icon - custom kalau ada, default drawable kalau kosong
+manifest_path = "app/src/main/AndroidManifest.xml"
+with open(manifest_path, "r", encoding="utf-8") as f:
+    m = f.read()
+
+if icon_b64:
+    icon_bytes = base64.b64decode(icon_b64)
+    mipmap_dir = "app/src/main/res/mipmap-xxxhdpi"
+    os.makedirs(mipmap_dir, exist_ok=True)
+    with open(os.path.join(mipmap_dir, "ic_launcher.png"), "wb") as f:
+        f.write(icon_bytes)
+    m = m.replace("PLACEHOLDER_ICON", "@mipmap/ic_launcher")
+else:
+    m = m.replace("PLACEHOLDER_ICON", "@drawable/ic_launcher")
+
+with open(manifest_path, "w", encoding="utf-8") as f:
+    f.write(m)
+
+print(f"Configured: app_name={app_name} package={package_name} mode={mode} custom_icon={bool(icon_b64)}")

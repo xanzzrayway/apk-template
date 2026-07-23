@@ -27,6 +27,7 @@ jobs:
           PACKAGE_NAME: ${{ github.event.client_payload.package_name }}
           MODE: ${{ github.event.client_payload.mode }}
           CONTENT: ${{ github.event.client_payload.content }}
+          ICON_B64: ${{ github.event.client_payload.icon_b64 }}
 
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon
